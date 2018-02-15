@@ -1,0 +1,23 @@
+---
+
+# Repository
+postgres_version: "9.6"
+postgres_apt_key: "https://www.postgresql.org/media/keys/ACCC4CF8.asc"
+postgres_apt_url: "deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main"
+
+zabbix_version: 3.4
+zabbix_repo_key: "http://repo.zabbix.com/zabbix-official-repo.key"
+zabbix_repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/{{ ansible_distribution.lower() }}/ {{ ansible_distribution_release }} main"
+
+# Database
+database_type: pgsql
+database_type_long: postgresql
+database_files_path: /usr/share/doc/zabbix-server-pgsql
+
+# Zabbix
+zabbix_DBHost: "{{ groups['postgresql'][0] }}"
+zabbix_DBName: zabbix
+zabbix_DBUser: zabbix
+zabbix_DBPassword: JdhabzKCbzbzHJD
+zabbix_DBPort: 5432
+zabbix_Include: /opt/zabbix/zabbix_server.conf.d

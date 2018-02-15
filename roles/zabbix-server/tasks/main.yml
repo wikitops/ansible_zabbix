@@ -1,0 +1,51 @@
+---
+
+- name: Install prerequisites packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-psycopg2
+
+- name: Add Zabbix repository key
+  apt_key:
+    url: "{{ zabbix_repo_key }}"
+    state: present
+
+- name: Add Zabbix repository
+  apt_repository:
+    repo: "{{ zabbix_repo }}"
+    state: present
+    update_cache: yes
+
+- name: Install Zabbix Server package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - zabbix-server-pgsql
+
+- name: Create Zabbix directories
+  file:
+    path: "{{ item }}"
+    owner: zabbix
+    group: zabbix
+    state: directory
+    mode: 0755
+  with_items:
+    - "{{ zabbix_Include }}"
+
+- name: Configure Zabbix Server
+  template:
+    src: etc/zabbix/zabbix_server.conf.j2
+    dest: /etc/zabbix/zabbix_server.conf
+    owner: zabbix
+    group: zabbix
+    mode: 0644
+  notify:
+    - Restart zabbix-server
+  tags:
+    - config-server
+
+- name: Manage Postgresql Backend Database
+  import_tasks: postgresql.yml

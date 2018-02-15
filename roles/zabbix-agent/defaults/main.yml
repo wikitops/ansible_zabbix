@@ -1,0 +1,12 @@
+---
+
+# Repository
+zabbix_version: 3.4
+zabbix_repo_key: "http://repo.zabbix.com/zabbix-official-repo.key"
+zabbix_repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/{{ ansible_distribution.lower() }}/ {{ ansible_distribution_release }} main"
+
+# Zabbix
+zabbix_Server: "{{ groups['zabbix'][0] }}"
+zabbix_ListenIp: "{{ inventory_hostname }}"
+zabbix_ServerActive: "{{ groups['zabbix'][0] }}:10051"
+zabbix_Hostname: "{{ ansible_hostname }}"

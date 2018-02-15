@@ -1,0 +1,45 @@
+---
+
+- name: Add PostgreSQL repository key
+  apt_key:
+    url: "{{ postgres_apt_key }}"
+    state: present
+
+- name: Add PostgreSQL repository
+  apt_repository:
+    repo: "{{ postgres_apt_url }}"
+    state: present
+
+- name: Install prerequisites packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - postgresql-client-9.6
+
+- name: Create Zabbix database on Postgresql
+  postgresql_db:
+    name: "{{ zabbix_DBName }}"
+    port: "{{ zabbix_DBPort }}"
+    state: present
+  become: yes
+  become_user: postgres
+  delegate_to: "{{ zabbix_DBHost }}"
+
+- name: Create Zabbix role on Postgresql
+  postgresql_user:
+    db: "{{ zabbix_DBName }}"
+    name: "{{ zabbix_DBUser }}"
+    password: "md5{{ (zabbix_DBPassword + zabbix_DBUser)|hash('md5') }}"
+    port: "{{ zabbix_DBPort }}"
+    priv: ALL
+    state: present
+    encrypted: yes
+  become: yes
+  become_user: postgres
+  delegate_to: "{{ zabbix_DBHost }}"
+
+- name: Create Zabbix tables on Postgresql
+  shell: zcat {{ database_files_path }}/create.sql.gz | psql -h '{{ zabbix_DBHost }}' -U '{{ zabbix_DBUser }}' -d '{{ zabbix_DBName }}' -p '{{ zabbix_DBPort }}'
+  environment:
+    PGPASSWORD: '{{ zabbix_DBPassword }}'

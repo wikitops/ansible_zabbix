@@ -1,0 +1,31 @@
+---
+
+- name: Add Zabbix repository key
+  apt_key:
+    url: "{{ zabbix_repo_key }}"
+    state: present
+
+- name: Add Zabbix repository
+  apt_repository:
+    repo: "{{ zabbix_repo }}"
+    state: present
+    update_cache: yes
+
+- name: Install Zabbix Agent package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - zabbix-agent
+    - zabbix-sender
+    - zabbix-get
+
+- name: Configure Zabbix Agent
+  template:
+    src: "etc/zabbix/zabbix_agentd.conf.j2"
+    dest: "/etc/zabbix/zabbix_agentd.conf"
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart zabbix-agent
+  tags: config-agent

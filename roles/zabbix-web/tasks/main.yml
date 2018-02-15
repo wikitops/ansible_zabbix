@@ -1,0 +1,43 @@
+---
+
+- name: Install prerequisites packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - php-pgsql
+
+- name: Add Zabbix repository key
+  apt_key:
+    url: "{{ zabbix_repo_key }}"
+    state: present
+
+- name: Add Zabbix repository
+  apt_repository:
+    repo: "{{ zabbix_repo }}"
+    state: present
+    update_cache: yes
+
+- name: Install Zabbix Web package
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - zabbix-frontend-php
+
+- name: Configure Zabbix Web Interface
+  template:
+    src: etc/zabbix/web/zabbix.conf.php.j2
+    dest: /etc/zabbix/web/zabbix.conf.php
+    owner: www-data
+    group: www-data
+    mode: 0644
+  tags:
+    - config-web
+
+- name: Configure Apache timezone
+  lineinfile:
+    path: /etc/zabbix/apache.conf
+    line: "php_value date.timezone Europe/Paris"
+    insertafter: "php_value always_populate_raw_post_data -1"
+  notify: Restart apache

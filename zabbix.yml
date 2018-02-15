@@ -1,0 +1,20 @@
+---
+
+- hosts: postgresql
+  remote_user: vagrant
+  become: yes
+  roles:
+    - postgresql
+
+- hosts: zabbix
+  remote_user: vagrant
+  become: yes
+  roles:
+    - zabbix-server
+    - zabbix-web
+
+- hosts: nodes
+  remote_user: vagrant
+  become: yes
+  roles:
+    - zabbix-agent

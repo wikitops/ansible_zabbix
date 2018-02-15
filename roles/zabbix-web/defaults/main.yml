@@ -1,0 +1,14 @@
+---
+
+# Repository
+zabbix_version: 3.4
+zabbix_repo_key: "http://repo.zabbix.com/zabbix-official-repo.key"
+zabbix_repo: "deb http://repo.zabbix.com/zabbix/{{ zabbix_version }}/{{ ansible_distribution.lower() }}/ {{ ansible_distribution_release }} main"
+
+# Zabbix
+zabbix_DBHost: "{{ groups['postgresql'][0] }}"
+zabbix_DBName: zabbix
+zabbix_DBUser: zabbix
+zabbix_DBPassword: JdhabzKCbzbzHJD
+zabbix_DBPort: 5432
+zabbix_ListenPort: 10051
